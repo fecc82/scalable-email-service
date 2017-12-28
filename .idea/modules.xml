@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/email-service-app/email-service-app.iml" filepath="$PROJECT_DIR$/email-service-app/email-service-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/scalable-email-service.iml" filepath="$PROJECT_DIR$/scalable-email-service.iml" />
+    </modules>
+  </component>
+</project>
