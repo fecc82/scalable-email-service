@@ -8,6 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.concurrent.CompletableFuture;
+
 
 @SpringBootApplication(scanBasePackages = {"com.email.service.impl"})
 @RestController
@@ -17,15 +19,14 @@ public class MainApplication {
     @Qualifier("mailGun")
     private EmailService email;
 
-    @RequestMapping("/")
-    public String home() {
-        return "Hello World2";
+    @RequestMapping("/sendEmail")
+    public CompletableFuture<String> test(){
+        email.send(null,null,null);
+        return  CompletableFuture.completedFuture("OK!");
     }
-
-    @RequestMapping("/test")
-    public String test() {
-        email.send(null, null, null);
-        return "Hello World";
+    @RequestMapping("/")
+    public CompletableFuture<String> health(){
+        return  CompletableFuture.completedFuture("OK!");
     }
 
     public static void main(String[] args) {

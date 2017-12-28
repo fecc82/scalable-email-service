@@ -10,8 +10,8 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="email-service-app" target="1.5" />
-      <module name="scalable-email-service" target="1.5" />
+      <module name="email-service-app" target="1.8" />
+      <module name="scalable-email-service" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

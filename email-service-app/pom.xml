@@ -12,11 +12,6 @@
     <artifactId>email-service-app</artifactId>
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
-    <properties>
-        <!-- Spring boot main class -->
-        <start-class>com.email.service.main.MainApplication</start-class>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -42,6 +37,7 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
         </dependency>
+
     </dependencies>
 
     <build>
