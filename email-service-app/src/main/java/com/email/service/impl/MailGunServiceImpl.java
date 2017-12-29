@@ -25,7 +25,7 @@ public class MailGunServiceImpl implements EmailService {
 
 
 
-    private final String API_KEY = "key-dbcd44fde4f708379d67150fe0c75d4d";
+    private final String API_KEY = "";
     private final String URL = "https://api.mailgun.net/v3/sandbox9073ddbcd8d14680ad6289ef9ca73ed2.mailgun.org/messages";
     private final RestTemplate restTemplate;
 

@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Service
 @Qualifier("sendGrid")
 public class SendGridServiceImpl implements EmailService {
-    private final static String API_KEY = "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";
+    private final static String API_KEY = "";
 
     @Override
     public SendEmailResponse send(SendEmailRequest emailRequest) {

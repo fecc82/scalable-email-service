@@ -21,6 +21,7 @@ public class ErrorMessage {
         this.debugMessage = debugMessage;
         timeStamp = LocalDateTime.now().toString();
     }
+
     public void generateErrorMessage(HttpStatus status, String message, String debugMessage) {
         ArrayList<String> messages = new ArrayList<String>(Arrays.asList(message));
         generateErrorMessage(status, messages, debugMessage);
