@@ -18,6 +18,7 @@
         <unirest>1.4.9</unirest>
         <jersey>1.19.4</jersey>
         <sendgrid>4.1.2</sendgrid>
+        <jackson>2.8.5</jackson>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -31,6 +32,28 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/cz.jirutka.validator/validator-collection -->
+        <dependency>
+            <groupId>cz.jirutka.validator</groupId>
+            <artifactId>validator-collection</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-xml -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+            <version>${jackson}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson}</version>
+        </dependency>
+
+
+
         <dependency>
             <groupId>com.mashape.unirest</groupId>
             <artifactId>unirest-java</artifactId>
