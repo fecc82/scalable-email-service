@@ -11,12 +11,13 @@ import java.util.Map;
 
 /**
  * This is for testing application locally in cucumber and so it doesnt spam emails.
+ * And for testing failovers
  */
 @Service
 @Qualifier("local")
 public class LocalTestServiceImpl implements EmailService {
     public SendEmailResponse send(SendEmailRequest emailRequest) {
-        return new SendEmailResponse(HttpStatus.OK, SUCCESS);
+      return new SendEmailResponse(HttpStatus.NOT_FOUND, ERROR);
     }
 
     public Map mapRequestToApiParams(SendEmailRequest emailRequest) {

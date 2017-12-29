@@ -6,13 +6,16 @@ import akka.japi.pf.ReceiveBuilder;
 import com.email.service.api.EmailService;
 import com.email.service.data.SendEmailRequest;
 import com.email.service.data.SendEmailResponse;
+import org.springframework.http.HttpStatus;
+
+import java.util.LinkedHashSet;
 
 
 public class EmailSenderActor extends AbstractActor {
-    public EmailService emailService;
+    public LinkedHashSet<EmailService> emailServiceSet;
 
-    public EmailSenderActor(EmailService emailService) {
-        this.emailService = emailService;
+    public EmailSenderActor(LinkedHashSet<EmailService> emailServiceSet) {
+        this.emailServiceSet = emailServiceSet;
     }
 
     public Receive createReceive() {
@@ -20,8 +23,13 @@ public class EmailSenderActor extends AbstractActor {
                 .match(SendEmailRequest.class, this::sendEmail).build();
     }
 
-    public void sendEmail(SendEmailRequest email) {
-        SendEmailResponse response = emailService.send(email);
-        getSender().tell(response, ActorRef.noSender());
+    public void sendEmail(SendEmailRequest request) {
+        for (EmailService service : emailServiceSet) {
+            SendEmailResponse response = service.send(request);
+            if (response.getStatus() == HttpStatus.OK || response.getStatus() == HttpStatus.ACCEPTED) {
+                getSender().tell(response, ActorRef.noSender());
+                break;
+            }
+        }
     }
 }

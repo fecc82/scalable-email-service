@@ -2,6 +2,11 @@
 
 Fully Scalable Email Service
 
+## Getting Started
+When running the install command Docker/Maven needs installed/running in your machine.
+This will compile the codes, create images, run containers, run tests on it and stop containers.
+See Testing Framework below for more details.
+
 ## Technology Stack
 
 * Spring-platform - Spring-Platform as the application framework, Using dependency injection. This enables us to swap out implementation easily buy using interfaces instead of direct implemnetations.
@@ -20,9 +25,28 @@ Fully Scalable Email Service
 
 We fetch one Actor from an Actor System(Singleton), and let the Actor do the work. Sends back the response asynchronously
 ```
- ActorRef r = actorSystem.actorOf(Props.create(EmailSenderActor.class, emailSenderService), EMAIL_ACTOR);
-
+ActorRef r = actorSystem.actorOf(Props.create(EmailSenderActor.class,services), EMAIL_ACTOR);
 ```
+
+At this point we have already given the actor all the services needed, 
+he will then try to execute the task to send email until one of the services (MailGun or SendGrid) returns a successful response
+
+We are purposely adding a Local email Service to test a failure scenario, whereas one of the email service is down.
+This handles any failovers without affecting user experience.
+
+This all done asynchronously, should all services fail the Actor Timeout will throw an exception as no response will be returned during the duration. Timeout is configurable.
+```
+  public void sendEmail(SendEmailRequest request) {
+        for (EmailService service : emailServiceSet) {
+            SendEmailResponse response = service.send(request);
+            if (response.getStatus() == HttpStatus.OK || response.getStatus() == HttpStatus.ACCEPTED) {
+                getSender().tell(response, ActorRef.noSender());
+                break;
+            }
+        }
+    }
+```
+
 
 * We are using interface/implementation for Services to enable us to easily swap out implementation when needed, main Application does not need to know how the implementation is done, just need to call send method
 
@@ -45,8 +69,6 @@ public class SendEmailRequest {
     @EachPattern(regexp = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,4}.", message = "Request contains an invalid email")
     private ArrayList<String> recipients;
 ```
-
-* We are using Akka for concurrency and handling high volume request, together with Java 8 Completable Future making the microservice asynchronous and non-blocking
 
 ### Test Framework
 Cucumber provides a low-level documentation via *.features files, and payloads are easily found in the test/resources folder

@@ -20,7 +20,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 @RestController
 @SpringBootApplication(scanBasePackages = {"com.email.service.*"})
@@ -29,9 +32,10 @@ public class MainApplication {
     private static final String EMAIL_ACTOR = "email_actor";
     private final static int TIME_OUT = 15000;
 
-    @Autowired
-    @Qualifier("local")
-    private EmailService emailSenderService;
+    @Autowired @Qualifier("local") private EmailService localMailService;
+    @Autowired @Qualifier("mailGun") private EmailService mailGunMailService;
+    @Autowired @Qualifier("sendGrid") private EmailService sendGridMailService;
+
     private ActorSystem actorSystem;
 
     public MainApplication(){
@@ -39,21 +43,18 @@ public class MainApplication {
     }
 
     @RequestMapping(value = "/health")
-    public CompletableFuture<String> health() {
+    public CompletionStage<String> health() {
         return CompletableFuture.completedFuture("OK!");
     }
 
     @RequestMapping(value = "/send", consumes = {MediaType.APPLICATION_JSON_VALUE}, method = RequestMethod.POST)
-    public CompletableFuture<SendEmailResponse> postEmail(@Valid @RequestBody SendEmailRequest email) {
-        ActorRef r = actorSystem.actorOf(Props.create(EmailSenderActor.class, emailSenderService), EMAIL_ACTOR);
-        return PatternsCS.ask(r, email,TIME_OUT).thenComposeAsync(result-> {
-            return CompletableFuture.completedFuture((SendEmailResponse)result);
-        }).toCompletableFuture();
+    public CompletionStage<SendEmailResponse> postEmail(@Valid @RequestBody SendEmailRequest email) {
+        LinkedHashSet<EmailService> services = new LinkedHashSet<>(Arrays.asList(localMailService, mailGunMailService,sendGridMailService));
+        ActorRef r = actorSystem.actorOf(Props.create(EmailSenderActor.class,services), EMAIL_ACTOR);
+        return PatternsCS.ask(r, email,TIME_OUT).thenComposeAsync(result-> CompletableFuture.completedFuture((SendEmailResponse)result));
     }
 
     public static void main(String[] args) {
         SpringApplication.run(MainApplication.class, args);
     }
-
-
 }
