@@ -4,7 +4,7 @@ import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.test.context.BootstrapWith;
 
 
-@BootstrapWith(value=SpringBootTestContextBootstrapper.class)
+@BootstrapWith(value = SpringBootTestContextBootstrapper.class)
 public class EmailIntegrationTest {
-    protected EmailServiceResponse testRunResponse;
+
 }
