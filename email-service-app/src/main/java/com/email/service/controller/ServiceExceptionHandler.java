@@ -1,6 +1,7 @@
 package com.email.service.controller;
 
-import com.email.service.data.ErrorMessage;
+
+import com.email.service.data.SendEmailResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
@@ -25,17 +25,22 @@ public class ServiceExceptionHandler {
      * @param ex
      * @return ErrorMessage
      */
-    @ResponseStatus
+    @ResponseStatus(value = HttpStatus.ACCEPTED)
     @ResponseBody
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    ErrorMessage handleWrongJsonFormatException(MethodArgumentNotValidException ex) {
+    SendEmailResponse handleWrongJsonFormatException(MethodArgumentNotValidException ex) {
         BindingResult result = ex.getBindingResult();
-        List<String> errors = result.getFieldErrors().stream()
+        String errors = result.getFieldErrors().stream()
                 .map(FieldError::getDefaultMessage)
-                .collect(Collectors.toList());
-        ErrorMessage errorMessage = new ErrorMessage();
-        errorMessage.generateErrorMessage(HttpStatus.BAD_REQUEST, errors, ex.getMessage());
-        return errorMessage;
+                .collect(Collectors.joining(", "));
+        return new SendEmailResponse(HttpStatus.ACCEPTED, errors);
+    }
+
+    @ResponseStatus(value = HttpStatus.ACCEPTED)
+    @ResponseBody
+    @ExceptionHandler(HttpClientErrorException.class)
+    SendEmailResponse handleHttpClientErrors(HttpClientErrorException hce) {
+        return new SendEmailResponse(hce.getStatusCode(), hce.getStatusText());
     }
 
     /**
@@ -44,18 +49,11 @@ public class ServiceExceptionHandler {
      * @param ex
      * @return ErrorMessage
      */
-    @ResponseStatus
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     @ResponseBody
     @ExceptionHandler(Exception.class)
-    ErrorMessage handleGeneralException(Exception ex) {
-        ErrorMessage errorMessage = new ErrorMessage();
-        if (ex instanceof HttpClientErrorException) {
-            HttpClientErrorException hce = (HttpClientErrorException) ex;
-            errorMessage.generateErrorMessage(hce.getStatusCode(), hce.getStatusText(), ex.getMessage());
-        } else {
-            errorMessage.generateErrorMessage(HttpStatus.NOT_FOUND, ERROR_MESSAGE, ex.getMessage());
-            ex.printStackTrace();
-        }
-        return errorMessage;
+    SendEmailResponse handleGeneralException(Exception ex) {
+        ex.printStackTrace();
+        return new SendEmailResponse(HttpStatus.BAD_REQUEST, ERROR_MESSAGE);
     }
 }

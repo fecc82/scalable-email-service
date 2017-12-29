@@ -6,15 +6,18 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 
-public class SendEmailResponse implements Serializable{
+public class SendEmailResponse implements Serializable {
     private HttpStatus status;
     private String message;
     private String timeStamp;
 
-    public SendEmailResponse(HttpStatus status, String message){
+    public SendEmailResponse(HttpStatus status, String message) {
         this.status = status;
         this.message = message;
         timeStamp = LocalDateTime.now().toString();
+    }
+
+    public SendEmailResponse() {
     }
 
     public HttpStatus getStatus() {

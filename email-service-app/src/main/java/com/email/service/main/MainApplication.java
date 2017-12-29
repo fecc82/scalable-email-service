@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 public class MainApplication {
 
     @Autowired
-    @Qualifier("mailGun")
+    @Qualifier("local")
     private EmailService emailSenderService;
 
     @RequestMapping(value = "/health")

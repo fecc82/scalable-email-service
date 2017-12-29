@@ -1,8 +1,10 @@
 package com.email.service.data;
 
 import cz.jirutka.validator.collection.constraints.EachPattern;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 
 public class SendEmailRequest {
@@ -17,12 +19,15 @@ public class SendEmailRequest {
     private ArrayList<String> bcc;
 
     @NotNull(message = "Sender cannot be null")
+    @Size(min=1, message="Sender cannot be blank")
     private String sender;
 
-    @NotNull(message = "Body cannot be null")
+    @NotNull(message = "Email Content cannot be null")
+    @Size(min=1, message="Email Content cannot be blank")
     private String htmlBody;
 
     @NotNull(message = "Title cannot be null")
+    @Size(min=1, message="Title cannot be blank")
     private String htmlTitle;
 
     public ArrayList<String> getRecipients() {
