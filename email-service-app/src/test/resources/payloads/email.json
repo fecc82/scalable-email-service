@@ -2,7 +2,10 @@
   "recipients":[
     "meltatlonghari3@gmail.com"
   ],
+  "cc":[
+    "melt_321@yahoo.com.ph"
+  ],
   "sender":"meltatlonghari3@gmail.com",
-  "htmlTitle":"CUCUMBER",
-  "htmlBody":"CUCUMBER"
+  "htmlTitle":"CUCUMBER CC",
+  "htmlBody":"CUCUMBER CC"
 }

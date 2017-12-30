@@ -1,7 +1,6 @@
 package com.email.service.data;
 
 import cz.jirutka.validator.collection.constraints.EachPattern;
-import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -9,13 +8,13 @@ import java.util.ArrayList;
 
 public class SendEmailRequest {
     @NotNull(message = "Recipient cannot be null")
-    @EachPattern(regexp = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,4}.", message = "Request contains an invalid email")
+    @EachPattern(regexp = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,4}", message = "Request contains an invalid email")
     private ArrayList<String> recipients;
 
-    @EachPattern(regexp = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,4}.", message = "Request contains an invalid email")
+    @EachPattern(regexp = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,4}", message = "Request contains an invalid email")
     private ArrayList<String> cc;
 
-    @EachPattern(regexp = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,4}.", message = "Request contains an invalid email")
+    @EachPattern(regexp = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,4}", message = "Request contains an invalid email")
     private ArrayList<String> bcc;
 
     @NotNull(message = "Sender cannot be null")

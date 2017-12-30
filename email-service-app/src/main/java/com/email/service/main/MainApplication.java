@@ -37,6 +37,7 @@ public class MainApplication {
     @Autowired @Qualifier("sendGrid") private EmailService sendGridMailService;
 
     private ActorSystem actorSystem;
+    private ActorRef actorRef;
 
     public MainApplication(){
         actorSystem = ActorSystem.create();
@@ -49,9 +50,11 @@ public class MainApplication {
 
     @RequestMapping(value = "/send", consumes = {MediaType.APPLICATION_JSON_VALUE}, method = RequestMethod.POST)
     public CompletionStage<SendEmailResponse> postEmail(@Valid @RequestBody SendEmailRequest email) {
-        LinkedHashSet<EmailService> services = new LinkedHashSet<>(Arrays.asList(localMailService, mailGunMailService,sendGridMailService));
-        ActorRef r = actorSystem.actorOf(Props.create(EmailSenderActor.class,services), EMAIL_ACTOR);
-        return PatternsCS.ask(r, email,TIME_OUT).thenComposeAsync(result-> CompletableFuture.completedFuture((SendEmailResponse)result));
+        if(null == actorRef) {
+            LinkedHashSet<EmailService> services = new LinkedHashSet<>(Arrays.asList(localMailService, mailGunMailService, sendGridMailService));
+            actorRef = actorSystem.actorOf(Props.create(EmailSenderActor.class, services), EMAIL_ACTOR);
+        }
+        return PatternsCS.ask(actorRef, email,TIME_OUT).thenComposeAsync(result-> CompletableFuture.completedFuture((SendEmailResponse)result));
     }
 
     public static void main(String[] args) {

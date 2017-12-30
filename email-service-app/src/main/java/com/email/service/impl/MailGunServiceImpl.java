@@ -15,8 +15,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -62,8 +61,13 @@ public class MailGunServiceImpl implements EmailService {
         Map<String, String> parameterValues = new HashMap<>();
         parameterValues.put("to", emailRequest.getRecipients().stream().collect(Collectors.joining(",")));
         parameterValues.put("from", emailRequest.getSender());
+        parameterValues.put("cc", Optional.ofNullable(emailRequest.getCc()).orElse(new ArrayList<>()).stream().collect(Collectors.joining(",")));
+        parameterValues.put("bcc", Optional.ofNullable(emailRequest.getBcc()).orElse(new ArrayList<>()).stream().collect(Collectors.joining(",")));
         parameterValues.put("subject", emailRequest.getHtmlTitle());
         parameterValues.put("text", emailRequest.getHtmlBody());
+        parameterValues = parameterValues.entrySet().stream()
+                .filter(entry -> (entry.getValue() != null && !"".equals(entry.getValue())))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         return parameterValues;
     }
 }

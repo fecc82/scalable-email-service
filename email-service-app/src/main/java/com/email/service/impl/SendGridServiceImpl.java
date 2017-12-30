@@ -8,14 +8,16 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @Qualifier("sendGrid")
 public class SendGridServiceImpl implements EmailService {
-    private final static String API_KEY = "";
+    private final static String API_KEY = System.getenv("SEND-GRID-API-KEY");
 
     @Override
     public SendEmailResponse send(SendEmailRequest emailRequest) {
@@ -50,6 +52,11 @@ public class SendGridServiceImpl implements EmailService {
         parameterValues.put("from", new Email(emailRequest.getSender()));
         parameterValues.put("subject", emailRequest.getHtmlTitle());
         parameterValues.put("text", new Content("text/plain", emailRequest.getHtmlBody()));
+        parameterValues.put("cc", Optional.ofNullable(emailRequest.getCc()).orElse(new ArrayList<>()).stream().collect(Collectors.joining(",")));
+        parameterValues.put("bcc", Optional.ofNullable(emailRequest.getBcc()).orElse(new ArrayList<>()).stream().collect(Collectors.joining(",")));
+        parameterValues = parameterValues.entrySet().stream()
+                .filter(entry -> (entry.getValue() != null && !"".equals(entry.getValue())))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         return parameterValues;
     }
 }
