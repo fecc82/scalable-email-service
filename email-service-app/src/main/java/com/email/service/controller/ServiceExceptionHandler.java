@@ -11,13 +11,16 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 
+import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class ServiceExceptionHandler {
 
-    private final String ERROR_MESSAGE = "General Exception Ocurred";
+    private final String ERROR_MESSAGE = "General Exception Occurred";
+    private final String AKKA_TIMEOUT = "Unable to Send Email, none of the Third Party Email APIs returned a Success Message";
 
     /**
      * handles any JSON problem and returns http status 400
@@ -53,7 +56,21 @@ public class ServiceExceptionHandler {
     @ResponseBody
     @ExceptionHandler(Exception.class)
     SendEmailResponse handleGeneralException(Exception ex) {
-        ex.printStackTrace();
         return new SendEmailResponse(HttpStatus.BAD_REQUEST, ERROR_MESSAGE);
     }
+
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    @ExceptionHandler(AsyncRequestTimeoutException.class)
+    SendEmailResponse handleAPITimeOutException(AsyncRequestTimeoutException ex) {
+        return new SendEmailResponse(HttpStatus.BAD_REQUEST, AKKA_TIMEOUT);
+    }
+
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    @ExceptionHandler(CompletionException.class)
+    SendEmailResponse handleTimeOutException(CompletionException ex) {
+        return new SendEmailResponse(HttpStatus.BAD_REQUEST, AKKA_TIMEOUT);
+    }
+
 }

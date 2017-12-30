@@ -106,6 +106,7 @@ mvn install
 * Not Hardcoding parameters in pom.xml
 * Convert Akka to cluster will require multiple nodes running at the same time
 * Although service is already stateless, Akka Actor model should not pass around mutable objects, as it may result into returning to normal Java concurrency and its drawbacks. See [Actor Model Best Practices](https://doc.akka.io/docs/akka/2.5.5/java/general/actor-systems.html)
+* I was unable to implement cc and bcc on send grid due to accounts always being [disabled](https://github.com/sendgrid/sendgrid-nodejs/issues/283)
 
 ### Considerations
 Other considerations to implement same result:
