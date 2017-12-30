@@ -18,15 +18,15 @@ public class SendEmailRequest {
     private ArrayList<String> bcc;
 
     @NotNull(message = "Sender cannot be null")
-    @Size(min=1, message="Sender cannot be blank")
+    @Size(min = 1, message = "Sender cannot be blank")
     private String sender;
 
     @NotNull(message = "Email Content cannot be null")
-    @Size(min=1, message="Email Content cannot be blank")
+    @Size(min = 1, message = "Email Content cannot be blank")
     private String htmlBody;
 
     @NotNull(message = "Title cannot be null")
-    @Size(min=1, message="Title cannot be blank")
+    @Size(min = 1, message = "Title cannot be blank")
     private String htmlTitle;
 
     public ArrayList<String> getRecipients() {
@@ -75,5 +75,15 @@ public class SendEmailRequest {
 
     public void setSender(String sender) {
         this.sender = sender;
+    }
+
+    @Override
+    public String toString() {
+        return "SendEmailRequest{" +
+                "   recipients=" + recipients.toString() +
+                ", htmlBody=" + htmlBody +
+                ", htmlTitle=" + htmlTitle +
+                ", sender='" + sender + '\'' +
+                '}';
     }
 }

@@ -6,6 +6,7 @@ import akka.japi.pf.ReceiveBuilder;
 import com.email.service.api.EmailService;
 import com.email.service.data.SendEmailRequest;
 import com.email.service.data.SendEmailResponse;
+import com.email.service.util.AppEvents;
 import org.springframework.http.HttpStatus;
 
 import java.util.LinkedHashSet;
@@ -24,6 +25,7 @@ public class EmailSenderActor extends AbstractActor {
     }
 
     public void sendEmail(SendEmailRequest request) {
+        AppEvents.eventOf("Email Actor has Received the Request for processing", request);
         for (EmailService service : emailServiceSet) {
             SendEmailResponse response = service.send(request);
             if (response.getStatus() == HttpStatus.OK || response.getStatus() == HttpStatus.ACCEPTED) {

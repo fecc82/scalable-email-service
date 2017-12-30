@@ -3,6 +3,7 @@ package com.email.service.impl;
 import com.email.service.api.EmailService;
 import com.email.service.data.SendEmailRequest;
 import com.email.service.data.SendEmailResponse;
+import com.email.service.util.AppEvents;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
@@ -31,11 +32,13 @@ public class MailGunServiceImpl implements EmailService {
 
     @Override
     public SendEmailResponse send(SendEmailRequest emailRequest) {
+        AppEvents.eventOf("Trying to FETCH API in Environment key " + System.getenv("API_KEY"), emailRequest);
+        AppEvents.eventOf("Trying Mail Gun to send Email", emailRequest);
         Map<String, String> parameterValues = mapRequestToApiParams(emailRequest);
-        return sendPostRequest(URL, parameterValues);
+        return sendPostRequest(URL, parameterValues,emailRequest);
     }
 
-    private SendEmailResponse sendPostRequest(String uri, Map<String, String> parameters) {
+    private SendEmailResponse sendPostRequest(String uri, Map<String, String> parameters, SendEmailRequest emailRequest) {
         HttpHeaders headers = new HttpHeaders() {{
             final String encodeKey = "api:" + API_KEY;
             byte[] encodedAuth = Base64.encodeBase64(encodeKey.getBytes(Charset.forName("US-ASCII")));
@@ -49,8 +52,10 @@ public class MailGunServiceImpl implements EmailService {
         SendEmailResponse serviceResponse;
         try {
             ResponseEntity<String> response = restTemplate.postForEntity(uri, request, String.class);
+            AppEvents.eventOf("Send Mail Gun Email Success", emailRequest);
             serviceResponse = new SendEmailResponse(response.getStatusCode(), SUCCESS);
         } catch (Exception ex) {
+            AppEvents.eventOf("Send Mail Gun Email Failure", emailRequest, ex);
             serviceResponse = new SendEmailResponse(HttpStatus.NOT_FOUND, ERROR);
             ex.printStackTrace();
         }

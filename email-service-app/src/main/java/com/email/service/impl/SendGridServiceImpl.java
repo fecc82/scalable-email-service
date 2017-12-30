@@ -3,6 +3,7 @@ package com.email.service.impl;
 import com.email.service.api.EmailService;
 import com.email.service.data.SendEmailRequest;
 import com.email.service.data.SendEmailResponse;
+import com.email.service.util.AppEvents;
 import com.sendgrid.*;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ public class SendGridServiceImpl implements EmailService {
 
     @Override
     public SendEmailResponse send(SendEmailRequest emailRequest) {
+        AppEvents.eventOf("Trying Send Grid send Email", emailRequest);
         Map<String, Object> parameterValues = mapRequestToApiParams(emailRequest);
         Mail mail = new Mail((Email) parameterValues.get("from"),
                 (String) parameterValues.get("subject"),
@@ -36,10 +38,12 @@ public class SendGridServiceImpl implements EmailService {
             Response response = sg.api(request);
             if (response.getStatusCode() == HttpStatus.OK.value() || response.getStatusCode() == HttpStatus.ACCEPTED.value()) {
                 serviceResponse = new SendEmailResponse(HttpStatus.OK, SUCCESS);
+                AppEvents.eventOf("Send Grid Email Success", emailRequest);
             } else {
                 throw new Exception();
             }
         } catch (Exception ex) {
+            AppEvents.eventOf("Send Grid Email Failure", emailRequest, ex);
             ex.printStackTrace();
             serviceResponse = new SendEmailResponse(HttpStatus.NOT_FOUND, ERROR);
         }

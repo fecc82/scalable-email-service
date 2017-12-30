@@ -9,6 +9,7 @@ import com.email.service.api.EmailService;
 import com.email.service.controller.EmailSenderActor;
 import com.email.service.data.SendEmailRequest;
 import com.email.service.data.SendEmailResponse;
+import com.email.service.util.AppEvents;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
@@ -45,11 +46,13 @@ public class MainApplication {
 
     @RequestMapping(value = "/")
     public CompletionStage<String> health() {
+        AppEvents.eventOf("API Health Check",null);
         return CompletableFuture.completedFuture("OK!");
     }
 
     @RequestMapping(value = "/send", consumes = {MediaType.APPLICATION_JSON_VALUE}, method = RequestMethod.POST)
     public CompletionStage<SendEmailResponse> postEmail(@Valid @RequestBody SendEmailRequest email) {
+        AppEvents.eventOf("Received Call API Request",  email);
         if(null == actorRef) {
             LinkedHashSet<EmailService> services = new LinkedHashSet<>(Arrays.asList(localMailService, mailGunMailService, sendGridMailService));
             actorRef = actorSystem.actorOf(Props.create(EmailSenderActor.class, services), EMAIL_ACTOR);
