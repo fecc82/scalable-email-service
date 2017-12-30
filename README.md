@@ -7,6 +7,16 @@ When running the install command Docker/Maven needs installed/running in your ma
 This will compile the codes, create images, run containers, run tests on it and stop containers.
 See Testing Framework below for more details.
 
+###Running Locally
+JAR file:
+```
+java -jar email-service-app-1.0-SNAPSHOT.jar
+```
+Docker image:
+```
+
+```
+
 ## Technology Stack
 
 * Spring-platform - Spring-Platform as the application framework, Using dependency injection. This enables us to swap out implementation easily buy using interfaces instead of direct implemnetations.
@@ -91,12 +101,13 @@ mvn install
 
 * mvn does all the usual steps for compiling and initializing required
 * mvn packages the jar
-* mvn Creates a Docker images from that jar, with the tag: latest
+* mvn Creates a Docker images from that jar, with the tag: test
 * mvn runs docker container from that tag 
 * mvn runs cucumber on specified docker container
 * cucumber picks up which environment he is on (Set by System Variable), and run tests accordingly
 * Stops docker container
-* Ready for deployment
+* creates fimal container with new tag:latest for deployment
+
 
 ### Room for Improvement
 
@@ -122,6 +133,8 @@ Other considerations to implement same result:
 
 ## Authors
 * **Melchor Tatlonghari** - *Initial work* - [mel3kings](https://github.com/mel3kings)
+
+
 
 
 
