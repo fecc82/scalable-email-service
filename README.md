@@ -14,7 +14,7 @@ java -jar email-service-app-1.0-SNAPSHOT.jar
 ```
 Docker image:
 ```
-
+docker run -p 8080:8080 mel3kings/scalable-email-service
 ```
 
 ## Technology Stack

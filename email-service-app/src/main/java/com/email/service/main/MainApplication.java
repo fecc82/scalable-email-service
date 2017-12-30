@@ -43,7 +43,7 @@ public class MainApplication {
         actorSystem = ActorSystem.create();
     }
 
-    @RequestMapping(value = "/health")
+    @RequestMapping(value = "/")
     public CompletionStage<String> health() {
         return CompletableFuture.completedFuture("OK!");
     }
