@@ -2,10 +2,41 @@
 
 Fully Scalable Email Service
 
+
 ## Getting Started
 When running the install command Docker/Maven needs installed/running in your machine.
-This will compile the codes, create images, run containers, run tests on it and stop containers.
-See Testing Framework below for more details.
+mvn install will compile the codes, create images, run containers, run tests on it and stop containers.
+
+
+### Web Service API 
+* http://HOST_NAME/ 
+    * health check
+* http://HOST_NAME/send 
+    * Send Email
+    
+**Request:**
+```
+{
+  "recipients":[
+    "meltatlonghari3@gmail.com"
+  ],
+  "sender":"meltatlonghari3@gmail.com",
+  "htmlTitle":"Email Header",
+  "htmlBody":Email Body"
+}
+```
+
+**Response:**
+```
+{
+  "status":"OK",
+  "message":"Email has been sent",
+  "timeStamp":"2017-12-31T13:50:37.125"
+}
+```
+
+### Known Issues
+* Mail Gun needs to register email to be able to send email to it, this is to avoid spams.
 
 ###Running Locally
 JAR file:
@@ -14,7 +45,9 @@ java -jar email-service-app-1.0-SNAPSHOT.jar
 ```
 Docker image:
 ```
-docker run -p 8080:8080 mel3kings/scalable-email-service
+docker run -p 80:8080 -e MAILGUN_API_KEY=<key>
+-e SENDGRID_API_KEY=<key>
+mel3kings/scalable-email-service
 ```
 
 ## Technology Stack
@@ -26,6 +59,7 @@ docker run -p 8080:8080 mel3kings/scalable-email-service
 * Maven -  Dependency Management
 * Cucumber - Testing framework, that also gives us a low-level documentation and acts a source of truth for payloads
 * MailGun and SendGrid - Third Party Email Integration
+* Logging - we are not particularly using any third party jars for logging, only sys.out. This is because Docker containers are able to handle logs internally when you just print out. Also easier to integrate with centralized logging this way.
 
 ## Architectual Notes
 

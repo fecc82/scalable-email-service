@@ -8,6 +8,7 @@ import com.sendgrid.*;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,17 +19,19 @@ import java.util.stream.Collectors;
 @Service
 @Qualifier("sendGrid")
 public class SendGridServiceImpl implements EmailService {
-    private final static String API_KEY = System.getenv("SEND-GRID-API-KEY");
+    private final static String SENDGRID_API_KEY =System.getenv("SENDGRID_API_KEY");
 
     @Override
     public SendEmailResponse send(SendEmailRequest emailRequest) {
+        AppEvents.eventOf("Checking if Send Grid API is valid, KEY_SIZE: "
+                + Optional.ofNullable(SENDGRID_API_KEY).orElse("").length(), emailRequest);
         AppEvents.eventOf("Trying Send Grid send Email", emailRequest);
         Map<String, Object> parameterValues = mapRequestToApiParams(emailRequest);
         Mail mail = new Mail((Email) parameterValues.get("from"),
                 (String) parameterValues.get("subject"),
                 (Email) parameterValues.get("to"),
                 (Content) parameterValues.get("text"));
-        SendGrid sg = new SendGrid(API_KEY);
+        SendGrid sg = new SendGrid(SENDGRID_API_KEY);
         SendEmailResponse serviceResponse;
         try {
             Request request = new Request();
@@ -40,11 +43,13 @@ public class SendGridServiceImpl implements EmailService {
                 serviceResponse = new SendEmailResponse(HttpStatus.OK, SUCCESS);
                 AppEvents.eventOf("Send Grid Email Success", emailRequest);
             } else {
-                throw new Exception();
+                throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
             }
+        } catch (HttpClientErrorException hce) {
+            AppEvents.eventOf("Send Grid Email API Failure", emailRequest, hce);
+            serviceResponse = new SendEmailResponse(HttpStatus.BAD_REQUEST, ERROR);
         } catch (Exception ex) {
-            AppEvents.eventOf("Send Grid Email Failure", emailRequest, ex);
-            ex.printStackTrace();
+            AppEvents.eventOf("General Error: Send Grid Email Failure", emailRequest, ex);
             serviceResponse = new SendEmailResponse(HttpStatus.NOT_FOUND, ERROR);
         }
         return serviceResponse;

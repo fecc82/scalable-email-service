@@ -33,10 +33,10 @@ public class AppEvents {
     @Override
     public String toString() {
         return "AppEvents{" +
-                " event=" + event +
-                ", time=" + time +
-                ", payload=" + payload +
-                ", error='" + error + '\'' +
+                " event= " + event +
+                ", time= " + time +
+                ", payload= " + payload +
+                ", error= '" + error + '\'' +
                 '}';
     }
 }

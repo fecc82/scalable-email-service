@@ -13,16 +13,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @Qualifier("mailGun")
 public class MailGunServiceImpl implements EmailService {
-    private final String API_KEY = "";
+    private String MAILGUN_API_KEY = System.getenv("MAILGUN_API_KEY");
     private final String URL = "https://api.mailgun.net/v3/sandbox9073ddbcd8d14680ad6289ef9ca73ed2.mailgun.org/messages";
     private final RestTemplate restTemplate;
 
@@ -32,15 +36,15 @@ public class MailGunServiceImpl implements EmailService {
 
     @Override
     public SendEmailResponse send(SendEmailRequest emailRequest) {
-        AppEvents.eventOf("Trying to FETCH API in Environment key " + System.getenv("API_KEY"), emailRequest);
+        AppEvents.eventOf("Checking if API is valid, KEY_SIZE: " + Optional.ofNullable(MAILGUN_API_KEY).orElse("").length(), emailRequest);
         AppEvents.eventOf("Trying Mail Gun to send Email", emailRequest);
         Map<String, String> parameterValues = mapRequestToApiParams(emailRequest);
-        return sendPostRequest(URL, parameterValues,emailRequest);
+        return sendPostRequest(URL, parameterValues, emailRequest);
     }
 
     private SendEmailResponse sendPostRequest(String uri, Map<String, String> parameters, SendEmailRequest emailRequest) {
         HttpHeaders headers = new HttpHeaders() {{
-            final String encodeKey = "api:" + API_KEY;
+            final String encodeKey = "api:" + MAILGUN_API_KEY;
             byte[] encodedAuth = Base64.encodeBase64(encodeKey.getBytes(Charset.forName("US-ASCII")));
             final String authHeader = "Basic " + new String(encodedAuth);
             set("Authorization", authHeader);
@@ -54,11 +58,13 @@ public class MailGunServiceImpl implements EmailService {
             ResponseEntity<String> response = restTemplate.postForEntity(uri, request, String.class);
             AppEvents.eventOf("Send Mail Gun Email Success", emailRequest);
             serviceResponse = new SendEmailResponse(response.getStatusCode(), SUCCESS);
+        } catch (HttpClientErrorException hce) {
+            AppEvents.eventOf("Send Mail Gun Email API Failure", emailRequest, hce);
+            serviceResponse = new SendEmailResponse(HttpStatus.BAD_REQUEST, ERROR);
         } catch (Exception ex) {
-            AppEvents.eventOf("Send Mail Gun Email Failure", emailRequest, ex);
+            AppEvents.eventOf("General Error :: Send Mail Gun Email Failure", emailRequest, ex);
             serviceResponse = new SendEmailResponse(HttpStatus.NOT_FOUND, ERROR);
-            ex.printStackTrace();
-        }
+         }
         return serviceResponse;
     }
 
