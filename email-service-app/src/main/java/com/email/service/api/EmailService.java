@@ -16,7 +16,7 @@ public interface EmailService {
     SendEmailResponse send(SendEmailRequest emailRequest);
 
     /**
-     * map request to
+     * Map SendEmailRequest to a map. This to cater for different requirements needed for each API.
      * @param emailRequest
      * @return
      */

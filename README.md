@@ -18,11 +18,20 @@ mvn install will compile the codes, create images, run containers, run tests on 
 ```
 {
   "recipients":[
-    "meltatlonghari3@gmail.com"
+    "meltatlonghari3@gmail.com",
+    "april.sombrio@gmail.com"
   ],
-  "sender":"meltatlonghari3@gmail.com",
+  "cc":[
+    "meltatlonghari3@gmail.com",
+    "april.sombrio@gmail.com"
+  ],
+  "bcc":[
+    "meltatlonghari3@gmail.com",
+    "april.sombrio@gmail.com"
+  ],
+  "sender":"april.sombrio@gmail.com",
   "htmlTitle":"Email Header",
-  "htmlBody":Email Body"
+  "htmlBody":"Email Body"
 }
 ```
 
@@ -36,7 +45,8 @@ mvn install will compile the codes, create images, run containers, run tests on 
 ```
 
 ### Known Issues
-* Mail Gun needs to register email to be able to send email to it, this is to avoid spams.
+* Mail Gun API needs to register email to be able to send email to it, this is to avoid spams.
+* Send Grid API does not allow duplicates between to, cc, bccs
 
 ###Running Locally
 JAR file:

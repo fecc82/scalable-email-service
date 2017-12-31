@@ -23,6 +23,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Integration with Mail Gun API Email Service
+ */
 @Service
 @Qualifier("mailGun")
 public class MailGunServiceImpl implements EmailService {

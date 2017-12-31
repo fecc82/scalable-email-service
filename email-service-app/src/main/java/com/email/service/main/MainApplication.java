@@ -26,6 +26,9 @@ import java.util.LinkedHashSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
+/**
+ * Main Spring Boot Application
+ */
 @RestController
 @SpringBootApplication(scanBasePackages = {"com.email.service.*"})
 public class MainApplication {

@@ -16,6 +16,9 @@ import org.springframework.web.context.request.async.AsyncRequestTimeoutExceptio
 import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
+/**
+ * Exception Handler for API Service
+ */
 @ControllerAdvice
 public class ServiceExceptionHandler {
 

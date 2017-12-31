@@ -3,6 +3,9 @@ package com.email.service.util;
 import com.email.service.data.SendEmailRequest;
 import org.joda.time.LocalDateTime;
 
+/**
+ * App Events Object for logging purposes.
+ */
 public class AppEvents {
     private String event;
     private LocalDateTime time;

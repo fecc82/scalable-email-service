@@ -6,6 +6,9 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 
+/**
+ * Object for Accepting Send Email Requests.
+ */
 public class SendEmailRequest {
     @NotNull(message = "Recipient cannot be null")
     @EachPattern(regexp = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,4}", message = "Request contains an invalid email")

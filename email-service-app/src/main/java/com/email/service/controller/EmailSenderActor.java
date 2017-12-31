@@ -12,6 +12,9 @@ import org.springframework.http.HttpStatus;
 import java.util.LinkedHashSet;
 
 
+/**
+ * Akka Actor for handling the actual sending of email. non-blocking.
+ */
 public class EmailSenderActor extends AbstractActor {
     public LinkedHashSet<EmailService> emailServiceSet;
 

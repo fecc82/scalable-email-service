@@ -6,6 +6,9 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 
+/**
+ * Object for Sending Email Response
+ */
 public class SendEmailResponse implements Serializable {
     private HttpStatus status;
     private String message;

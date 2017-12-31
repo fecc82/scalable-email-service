@@ -10,12 +10,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+/**
+ * Integration with Send Grid Email Service
+ */
 @Service
 @Qualifier("sendGrid")
 public class SendGridServiceImpl implements EmailService {
@@ -23,14 +24,10 @@ public class SendGridServiceImpl implements EmailService {
 
     @Override
     public SendEmailResponse send(SendEmailRequest emailRequest) {
-        AppEvents.eventOf("Checking if Send Grid API is valid, KEY_SIZE: "
-                + Optional.ofNullable(SENDGRID_API_KEY).orElse("").length(), emailRequest);
+        AppEvents.eventOf("Checking if Send Grid API is valid, KEY_SIZE: " + Optional.ofNullable(SENDGRID_API_KEY).orElse("").length(), emailRequest);
         AppEvents.eventOf("Trying Send Grid send Email", emailRequest);
         Map<String, Object> parameterValues = mapRequestToApiParams(emailRequest);
-        Mail mail = new Mail((Email) parameterValues.get("from"),
-                (String) parameterValues.get("subject"),
-                (Email) parameterValues.get("to"),
-                (Content) parameterValues.get("text"));
+        Mail mail = (Mail)parameterValues.get("mail");
         SendGrid sg = new SendGrid(SENDGRID_API_KEY);
         SendEmailResponse serviceResponse;
         try {
@@ -57,15 +54,16 @@ public class SendGridServiceImpl implements EmailService {
 
     public Map<String, Object> mapRequestToApiParams(SendEmailRequest emailRequest) {
         Map<String, Object> parameterValues = new HashMap<>();
-        parameterValues.put("to", new Email(emailRequest.getRecipients().stream().collect(Collectors.joining(","))));
-        parameterValues.put("from", new Email(emailRequest.getSender()));
-        parameterValues.put("subject", emailRequest.getHtmlTitle());
-        parameterValues.put("text", new Content("text/plain", emailRequest.getHtmlBody()));
-        parameterValues.put("cc", Optional.ofNullable(emailRequest.getCc()).orElse(new ArrayList<>()).stream().collect(Collectors.joining(",")));
-        parameterValues.put("bcc", Optional.ofNullable(emailRequest.getBcc()).orElse(new ArrayList<>()).stream().collect(Collectors.joining(",")));
-        parameterValues = parameterValues.entrySet().stream()
-                .filter(entry -> (entry.getValue() != null && !"".equals(entry.getValue())))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Mail mail = new Mail();
+        Personalization p = new Personalization();
+        emailRequest.getRecipients().forEach(email -> p.addTo(new Email(email)));
+        emailRequest.getCc().forEach(cc -> p.addCc(new Email(cc)));
+        emailRequest.getBcc().forEach(bcc-> p.addBcc(new Email(bcc)));
+        mail.setSubject(emailRequest.getHtmlTitle());
+        mail.addContent(new Content("text/plain", emailRequest.getHtmlBody()));
+        mail.addPersonalization(p);
+        mail.setFrom(new Email(emailRequest.getSender()));
+        parameterValues.put("mail", mail);
         return parameterValues;
     }
 }
