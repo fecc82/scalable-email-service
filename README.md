@@ -44,24 +44,11 @@ mvn install will compile the codes, create images, run containers, run tests on 
 }
 ```
 
-### Known Issues
-* Mail Gun API needs to register email to be able to send email to it, this is to avoid spams.
-* Send Grid API does not allow duplicates between to, cc, bccs
 
-###Running Locally
-JAR file:
-```
-java -jar email-service-app-1.0-SNAPSHOT.jar
-```
-Docker image:
-```
-docker run -p 80:8080 -e MAILGUN_API_KEY=<key>
--e SENDGRID_API_KEY=<key>
-mel3kings/scalable-email-service
-```
 
 ## Technology Stack
 
+* Amazon Web Services - Cloud  Platform for deploying the application, Used Custom EC2, VPC, IAM and Elastic Load Balancer
 * Spring-platform - Spring-Platform as the application framework, Using dependency injection. This enables us to swap out implementation easily buy using interfaces instead of direct implemnetations.
 * Spring-Boot -  Spring-boot as a lightweight server to run microservice
 * Akka - for handling concurrency by using Actor Model together with Java 8 allows for asynchronous processing of request
@@ -71,7 +58,27 @@ mel3kings/scalable-email-service
 * MailGun and SendGrid - Third Party Email Integration
 * Logging - we are not particularly using any third party jars for logging, only sys.out. This is because Docker containers are able to handle logs internally when you just print out. Also easier to integrate with centralized logging this way.
 
+Sample Logs:
+```
+AppEvents{ event= Received Call API Request, time= 2017-12-31T14:44:12.698, payload= SendEmailRequest{   recipients=[meltatlonghari3@gmail.com], htmlBody=Email Body, htmlTitle=Email Header, sender='april.sombrio@gmail.com'}, error= 'null'}
+AppEvents{ event= Email Actor has Received the Request for processing, time= 2017-12-31T14:44:12.770, payload= SendEmailRequest{   recipients=[meltatlonghari3@gmail.com], htmlBody=Email Body, htmlTitle=Email Header, sender='april.sombrio@gmail.com'}, error= 'null'}
+AppEvents{ event= Trying Local Service for failover, time= 2017-12-31T14:44:12.771, payload= SendEmailRequest{   recipients=[meltatlonghari3@gmail.com], htmlBody=Email Body, htmlTitle=Email Header, sender='april.sombrio@gmail.com'}, error= 'null'}
+
+```
+
+### Known Issues
+* We don't have a DNS for our load-balancer as this will costs $
+* Auto-scaling is also not configured to avoid costs
+* Mail Gun API needs to register email to be able to send email to it, this is to avoid spams.
+* Send Grid API does not allow duplicates between to, cc, bccs
+
 ## Architectual Notes
+
+
+![alt text](https://github.com/mel3kings/scalable-email-service/blob/master/Architecture.png)
+
+Note: this is for illustration purpose only, we have not set the actual scaling and cluster to avoid costs.
+Currently we only have one EC2 instance under a load balancer.
 
 ### Implementations Notes
 * We are using [Actor Model](https://doc.akka.io/docs/akka/current/guide/actors-motivation.html) to handle calls, this enables calls to be non-blocking and allows asynchronous processing
@@ -83,12 +90,13 @@ ActorRef r = actorSystem.actorOf(Props.create(EmailSenderActor.class,services), 
 ```
 
 At this point we have already given the actor all the services needed, 
-he will then try to execute the task to send email until one of the services (MailGun or SendGrid) returns a successful response
+he will then try to execute the task to send email until one of the services 
+(MailGun or SendGrid) returns a successful response
 
 We are purposely adding a Local email Service to test a failure scenario, whereas one of the email service is down.
 This handles any failovers without affecting user experience.
 
-This all done asynchronously, should all services fail the Actor Timeout will throw an exception as no response will be returned during the duration. Timeout is configurable.
+This is all done asynchronously, should all services fail the Actor Timeout will throw an exception as no response will be returned during the duration. Timeout is configurable.
 ```
   public void sendEmail(SendEmailRequest request) {
         for (EmailService service : emailServiceSet) {
@@ -150,8 +158,37 @@ mvn install
 * mvn runs cucumber on specified docker container
 * cucumber picks up which environment he is on (Set by System Variable), and run tests accordingly
 * Stops docker container
-* creates fimal container with new tag:latest for deployment
+* creates final container with new tag:latest for deployment
 
+### Deployment
+Since we have environment variables set in each environment, and testing
+is already done on the same image. We just need to push the image, and pull
+to wherever we want to deploy. 
+```
+docker push mel3kings/scalable-email-service:latest
+```
+I do not recommend building the application
+multiple times for different environments.
+
+### Running Locally
+
+Building/Compiling the code is just a mvn install command,
+however we need Docker to be running as the install commands
+is set to build the image, start/stop containers (with different tags),
+ and run tests on those containers.
+``` 
+mvn install
+```
+JAR file: (your environment needs to have the APIs Keys as seen below for Docker)
+```
+java -jar email-service-app-1.0-SNAPSHOT.jar
+```
+Docker image: 
+```
+docker run -p 80:8080 -e MAILGUN_API_KEY=<key>
+-e SENDGRID_API_KEY=<key>
+mel3kings/scalable-email-service
+```
 
 ### Room for Improvement
 
@@ -162,6 +199,7 @@ mvn install
 * Convert Akka to cluster will require multiple nodes running at the same time
 * Although service is already stateless, Akka Actor model should not pass around mutable objects, as it may result into returning to normal Java concurrency and its drawbacks. See [Actor Model Best Practices](https://doc.akka.io/docs/akka/2.5.5/java/general/actor-systems.html)
 * I was unable to implement cc and bcc on send grid due to accounts always being [disabled](https://github.com/sendgrid/sendgrid-nodejs/issues/283)
+* Using Docker swarm for Environment variables
 
 ### Considerations
 Other considerations to implement same result:
