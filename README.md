@@ -58,14 +58,6 @@ mvn install will compile the codes, create images, run containers, run tests on 
 * MailGun and SendGrid - Third Party Email Integration
 * Logging - we are not particularly using any third party jars for logging, only sys.out. This is because Docker containers are able to handle logs internally when you just print out. Also easier to integrate with centralized logging this way.
 
-Sample Logs:
-```
-AppEvents{ event= Received Call API Request, time= 2017-12-31T14:44:12.698, payload= SendEmailRequest{   recipients=[meltatlonghari3@gmail.com], htmlBody=Email Body, htmlTitle=Email Header, sender='april.sombrio@gmail.com'}, error= 'null'}
-AppEvents{ event= Email Actor has Received the Request for processing, time= 2017-12-31T14:44:12.770, payload= SendEmailRequest{   recipients=[meltatlonghari3@gmail.com], htmlBody=Email Body, htmlTitle=Email Header, sender='april.sombrio@gmail.com'}, error= 'null'}
-AppEvents{ event= Trying Local Service for failover, time= 2017-12-31T14:44:12.771, payload= SendEmailRequest{   recipients=[meltatlonghari3@gmail.com], htmlBody=Email Body, htmlTitle=Email Header, sender='april.sombrio@gmail.com'}, error= 'null'}
-
-```
-
 ### Known Issues
 * We don't have a DNS for our load-balancer as this will costs $
 * Auto-scaling is also not configured to avoid costs
@@ -78,7 +70,7 @@ AppEvents{ event= Trying Local Service for failover, time= 2017-12-31T14:44:12.7
 ![alt text](https://github.com/mel3kings/scalable-email-service/blob/master/Architecture.png)
 
 Note: this is for illustration purpose only, we have not set the actual scaling and cluster to avoid costs.
-Currently we only have one EC2 instance under a load balancer.
+Currently we only have one EC2 instance under a load balancer, but this is the architecture of the application.
 
 ### Implementations Notes
 * We are using [Actor Model](https://doc.akka.io/docs/akka/current/guide/actors-motivation.html) to handle calls, this enables calls to be non-blocking and allows asynchronous processing
@@ -131,6 +123,14 @@ public class SendEmailRequest {
     @EachPattern(regexp = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,4}.", message = "Request contains an invalid email")
     private ArrayList<String> recipients;
 ```
+
+* Sample Logs:
+ ```
+ AppEvents{ event= Received Call API Request, time= 2017-12-31T14:44:12.698, payload= SendEmailRequest{   recipients=[meltatlonghari3@gmail.com], htmlBody=Email Body, htmlTitle=Email Header, sender='april.sombrio@gmail.com'}, error= 'null'}
+ AppEvents{ event= Email Actor has Received the Request for processing, time= 2017-12-31T14:44:12.770, payload= SendEmailRequest{   recipients=[meltatlonghari3@gmail.com], htmlBody=Email Body, htmlTitle=Email Header, sender='april.sombrio@gmail.com'}, error= 'null'}
+ AppEvents{ event= Trying Local Service for failover, time= 2017-12-31T14:44:12.771, payload= SendEmailRequest{   recipients=[meltatlonghari3@gmail.com], htmlBody=Email Body, htmlTitle=Email Header, sender='april.sombrio@gmail.com'}, error= 'null'}
+ 
+ ```
 
 ### Test Framework
 Cucumber provides a low-level documentation via *.features files, and payloads are easily found in the test/resources folder
