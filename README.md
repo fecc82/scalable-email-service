@@ -9,10 +9,13 @@ mvn install will compile the codes, create images, run containers, run tests on 
 
 
 ### Web Service API 
-* http://HOST_NAME/ 
+GET Method
+* http://${HOST_NAME}/ 
     * health check
-* http://HOST_NAME/send 
-    * Send Email
+    
+POST Method
+* http://${HOST_NAME}/send 
+    * Sends Email
     
 **Request:**
 ```
