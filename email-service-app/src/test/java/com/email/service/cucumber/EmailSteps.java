@@ -5,6 +5,8 @@ import cucumber.api.java.en.When;
 import gherkin.deps.com.google.gson.Gson;
 import gherkin.deps.com.google.gson.JsonElement;
 import gherkin.deps.com.google.gson.stream.JsonReader;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.io.File;
 import java.io.FileReader;
@@ -38,8 +40,10 @@ public class EmailSteps extends TestSteps {
             } else if (method.equals("POST")) {
                 executePost(domain + url);
             }
-        } catch (Exception ex) {
-            getTestRunResponse().setErrorOccured(true);
+        } catch (HttpClientErrorException ex) {
+            if(ex.getStatusCode() == HttpStatus.METHOD_NOT_ALLOWED) {
+                getTestRunResponse().setErrorOccured(true);
+            }
         }
     }
 

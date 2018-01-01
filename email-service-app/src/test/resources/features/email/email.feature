@@ -1,13 +1,8 @@
 Feature: User should be able to send email and check API health
 
-  Scenario: User should not be able to POST on health method
-    When I have a new request
-    And User sends a POST request for /health
-    Then an Error should Occur
-
   Scenario: User checks API health using GET method
     When I have a new request
-    And User sends a GET request for /health
+    And User sends a GET request for /
     Then eventually the response status code is 200
 
   Scenario: User should be able to send email on /send

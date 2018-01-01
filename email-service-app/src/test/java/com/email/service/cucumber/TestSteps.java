@@ -2,9 +2,9 @@ package com.email.service.cucumber;
 
 import com.email.service.EmailIntegrationTest;
 import com.email.service.EmailServiceResponse;
-import com.email.service.data.SendEmailResponse;
 import org.springframework.http.*;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
 
@@ -25,9 +25,11 @@ public class TestSteps extends EmailIntegrationTest {
     }
 
     public void reset() {
+        HttpComponentsClientHttpRequestFactory httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
+        httpRequestFactory.setConnectTimeout(5);
         testContext = new TestContext();
         domain = testContext.getDomain();
-        restTemplate = new RestTemplate();
+        restTemplate = new RestTemplate(httpRequestFactory);
         testRunResponse = new EmailServiceResponse();
     }
 
@@ -46,9 +48,9 @@ public class TestSteps extends EmailIntegrationTest {
         HttpHeaders apiHeader = new HttpHeaders();
         apiHeader.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<>(getTestRunResponse().getData(), apiHeader);
-        ResponseEntity<SendEmailResponse> apiResponse = restTemplate.postForEntity(url, entity, SendEmailResponse.class);
+        ResponseEntity<EmailStepsResponse> apiResponse = restTemplate.postForEntity(url, entity, EmailStepsResponse.class);
         assertThat("Response is OK or Accepted", apiResponse.getStatusCode() == HttpStatus.OK || apiResponse.getStatusCode() == HttpStatus.ACCEPTED);
-        SendEmailResponse response = apiResponse.getBody();
+        EmailStepsResponse response = apiResponse.getBody();
         getTestRunResponse().setStatus(response.getStatus());
     }
 

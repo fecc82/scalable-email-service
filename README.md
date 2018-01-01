@@ -63,6 +63,7 @@ mvn install will compile the codes, create images, run containers, run tests on 
 * Auto-scaling is also not configured to avoid costs
 * Mail Gun API needs to register email to be able to send email to it, this is to avoid spams.
 * Send Grid API does not allow duplicates between to, cc, bccs
+* Currently using Docker-Toolbox so docker ip is 192.168.99.100 on integration test and needs some tweaks to run integration testing.
 
 ## Architectual Notes
 
@@ -148,17 +149,16 @@ Sample Cucumber Test Case:
 ```
 What happens when you run:
 ```
-mvn install
+mvn verify
 ```
 
 * mvn does all the usual steps for compiling and initializing required
 * mvn packages the jar
-* mvn Creates a Docker images from that jar, with the tag: test
+* mvn Creates a Docker images from that jar
 * mvn runs docker container from that tag 
 * mvn runs cucumber on specified docker container
 * cucumber picks up which environment he is on (Set by System Variable), and run tests accordingly
 * Stops docker container
-* creates final container with new tag:latest for deployment
 
 ### Deployment
 Since we have environment variables set in each environment, and testing

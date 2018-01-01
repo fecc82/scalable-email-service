@@ -10,9 +10,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * Integration with Send Grid Email Service
@@ -57,8 +59,8 @@ public class SendGridServiceImpl implements EmailService {
         Mail mail = new Mail();
         Personalization p = new Personalization();
         emailRequest.getRecipients().forEach(email -> p.addTo(new Email(email)));
-        emailRequest.getCc().forEach(cc -> p.addCc(new Email(cc)));
-        emailRequest.getBcc().forEach(bcc-> p.addBcc(new Email(bcc)));
+        Optional.ofNullable(emailRequest.getCc()).map(Collection::stream).orElse(Stream.empty()).forEach(cc-> p.addCc(new Email(cc)));
+        Optional.ofNullable(emailRequest.getBcc()).map(Collection::stream).orElse(Stream.empty()).forEach(bcc-> p.addBcc(new Email(bcc)));
         mail.setSubject(emailRequest.getHtmlTitle());
         mail.addContent(new Content("text/plain", emailRequest.getHtmlBody()));
         mail.addPersonalization(p);

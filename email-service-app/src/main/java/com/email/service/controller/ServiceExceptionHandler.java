@@ -3,8 +3,10 @@ package com.email.service.controller;
 
 import com.email.service.data.SendEmailResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,6 +25,8 @@ import java.util.stream.Collectors;
 public class ServiceExceptionHandler {
 
     private final String ERROR_MESSAGE = "General Exception Occurred";
+    private final String METHOD_NOT_ALLOWED = "Method not allowed";
+    private final String API_CALL_EMPTY = "Request Parameters can't be empty";
     private final String AKKA_TIMEOUT = "Unable to Send Email, none of the Third Party Email APIs returned a Success Message";
 
     /**
@@ -62,18 +66,27 @@ public class ServiceExceptionHandler {
         return new SendEmailResponse(HttpStatus.BAD_REQUEST, ERROR_MESSAGE);
     }
 
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ResponseStatus(value = HttpStatus.METHOD_NOT_ALLOWED)
     @ResponseBody
-    @ExceptionHandler(AsyncRequestTimeoutException.class)
-    SendEmailResponse handleAPITimeOutException(AsyncRequestTimeoutException ex) {
-        return new SendEmailResponse(HttpStatus.BAD_REQUEST, AKKA_TIMEOUT);
+    @ExceptionHandler({HttpRequestMethodNotSupportedException.class})
+    SendEmailResponse handleGeneralException(HttpRequestMethodNotSupportedException ex) {
+        return new SendEmailResponse(HttpStatus.METHOD_NOT_ALLOWED, METHOD_NOT_ALLOWED);
+    }
+
+
+    @ResponseStatus(value = HttpStatus.METHOD_NOT_ALLOWED)
+    @ResponseBody
+    @ExceptionHandler({HttpMessageNotReadableException.class})
+    SendEmailResponse handleEmpty(HttpMessageNotReadableException ex) {
+        return new SendEmailResponse(HttpStatus.METHOD_NOT_ALLOWED, API_CALL_EMPTY);
     }
 
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     @ResponseBody
-    @ExceptionHandler(CompletionException.class)
-    SendEmailResponse handleTimeOutException(CompletionException ex) {
+    @ExceptionHandler({AsyncRequestTimeoutException.class,CompletionException.class})
+    SendEmailResponse handleAPITimeOutException(Exception ex) {
         return new SendEmailResponse(HttpStatus.BAD_REQUEST, AKKA_TIMEOUT);
     }
+
 
 }
