@@ -48,9 +48,9 @@ public class MainApplication {
     }
 
     @RequestMapping(value = "/")
-    public CompletionStage<String> health() {
+    public String health() {
         AppEvents.eventOf("API Health Check",null);
-        return CompletableFuture.completedFuture("OK!");
+        return "App OK!";
     }
 
     @RequestMapping(value = "/send", consumes = {MediaType.APPLICATION_JSON_VALUE}, method = RequestMethod.POST)

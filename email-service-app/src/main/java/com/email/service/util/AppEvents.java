@@ -1,7 +1,8 @@
 package com.email.service.util;
 
 import com.email.service.data.SendEmailRequest;
-import org.joda.time.LocalDateTime;
+
+import java.time.LocalDateTime;
 
 /**
  * App Events Object for logging purposes.
