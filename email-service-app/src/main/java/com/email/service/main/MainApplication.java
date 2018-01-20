@@ -39,7 +39,7 @@ public class MainApplication {
 
     private static final String EMAIL_ACTOR = "email_actor";
     private final static int TIME_OUT = 15000;
-    private String AKKA_PORT = System.getenv("AKKA_PORT");
+    private String CLUSTER_PORT = System.getenv("CLUSTER_PORT");
     @Autowired @Qualifier("local") private EmailService localMailService;
     @Autowired @Qualifier("mailGun") private EmailService mailGunMailService;
     @Autowired @Qualifier("sendGrid") private EmailService sendGridMailService;
@@ -47,27 +47,20 @@ public class MainApplication {
     private ActorSystem actorSystem;
     private ActorRef actorRef;
     public MainApplication(){
-        if (null == AKKA_PORT) {
-            AKKA_PORT = "2551";
+        if (null == CLUSTER_PORT) {
+            CLUSTER_PORT = "2551";
         }
-        //  actorSystem = ActorSystem.create();
-        //   String[] ports = new String[] { "2551", "2552", "0" };
-        //  for (String port : ports) {
-        // Override the configuration of the port
-        Config config = ConfigFactory.parseString("akka.remote.netty.tcp.port=" + AKKA_PORT + "\n" +
-                "akka.remote.artery.canonical.port=" + AKKA_PORT)
+        Config config = ConfigFactory.parseString("akka.remote.netty.tcp.port=" + CLUSTER_PORT + "\n" +
+                "akka.remote.artery.canonical.port=" + CLUSTER_PORT)
                 .withFallback(ConfigFactory.load());
-        // Create an Akka system
-        ActorSystem system = ActorSystem.create("ClusterSystem", config);
-        // Create an actor that handles cluster domain events
-        system.actorOf(Props.create(SimpleClusterListener.class), "clusterListener");
-        // }
+        actorSystem = ActorSystem.create("ClusterSystem", config);
+        actorSystem.actorOf(Props.create(SimpleClusterListener.class), "clusterListener");
     }
 
     @RequestMapping(value = "/")
     public String health() {
         AppEvents.eventOf("API Health Check",null);
-        return "App OK! Akka cluster port is : " + AKKA_PORT;
+        return "App OK! Akka cluster port is : " + CLUSTER_PORT;
     }
 
     @RequestMapping(value = "/send", consumes = {MediaType.APPLICATION_JSON_VALUE}, method = RequestMethod.POST)

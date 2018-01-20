@@ -3,16 +3,22 @@ services:
   email-service:
     ports:
       - "8080:8080"
+      - "2551:2551"
     container_name: email-service
     image: mel3kings/scalable-email-service
     build: .
     environment:
-      AKKA_PORT: 2551
+      CLUSTER_PORT: 2551
+      CLUSTER_IP: email-service
+      SEED_PORT_1600_TCP_ADDR: email-service
   email-services2:
     ports:
       - "8081:8080"
+      - "2552:2552"
     container_name: email-service_2
     image: mel3kings/scalable-email-service
     build: .
     environment:
-          AKKA_PORT: 2552
+        CLUSTER_PORT: 2552
+        CLUSTER_IP: email-services2
+        SEED_PORT_1600_TCP_ADDR: email-service

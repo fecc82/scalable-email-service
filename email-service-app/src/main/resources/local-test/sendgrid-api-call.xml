@@ -1,0 +1,42 @@
+<RestClientRequest>
+  <option name="biscuits">
+    <list />
+  </option>
+  <option name="httpMethod" value="POST" />
+  <option name="urlBase" value="https://api.sendgrid.com" />
+  <option name="urlPath" value="/v3/mail/send" />
+  <option name="headers">
+    <list>
+      <KeyValuePair>
+        <option name="key" value="Accept" />
+        <option name="value" value="*/*" />
+      </KeyValuePair>
+      <KeyValuePair>
+        <option name="key" value="Cache-Control" />
+        <option name="value" value="no-cache" />
+      </KeyValuePair>
+      <KeyValuePair>
+        <option name="key" value="Content-Type" />
+        <option name="value" value="application/json" />
+      </KeyValuePair>
+      <KeyValuePair>
+        <option name="key" value="Authorization" />
+        <option name="value" value="Bearer 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" />
+      </KeyValuePair>
+    </list>
+  </option>
+  <option name="parameters">
+    <list>
+      <KeyValuePair>
+        <option name="key" value="" />
+        <option name="value" value="" />
+      </KeyValuePair>
+    </list>
+  </option>
+  <option name="parametersEnabled" value="false" />
+  <option name="haveTextToSend" value="true" />
+  <option name="haveFileToSend" value="false" />
+  <option name="isFileUpload" value="false" />
+  <option name="textToSend" value="{   &quot;personalizations&quot;:[     {       &quot;to&quot;:[         {           &quot;email&quot;:&quot;meltatlonghari3@gmail.com&quot;         }       ]     }   ],   &quot;from&quot;:{     &quot;email&quot;:&quot;meltatlonghari3@gmail.com&quot;   },   &quot;subject&quot;:&quot;Hello World!&quot;,   &quot;content&quot;:[     {       &quot;type&quot;:&quot;text\/plain&quot;,       &quot;value&quot;:&quot;Heya!&quot;     }   ] }" />
+  <option name="filesToSend" value="" />
+</RestClientRequest>

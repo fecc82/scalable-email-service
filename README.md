@@ -78,7 +78,7 @@ Currently we only have one EC2 instance under a load balancer, but this is the a
 
 ### Implementations Notes
 * We are using [Actor Model](https://doc.akka.io/docs/akka/current/guide/actors-motivation.html) to handle calls, this enables calls to be non-blocking and allows asynchronous processing
-* Currently we have One Actor System for the application, but this prepares it for cluster. An Actor System can have multiple Actors, which in turn have their own mailboxes which they events one by one without blocking each other. 
+* We have a Akka cluster setup that can be started using the attached docker-compose file
 
 We fetch one Actor from an Actor System(Singleton), and let the Actor do the work. Sends back the response asynchronously
 ```
@@ -218,6 +218,7 @@ Other considerations to implement same result:
 
 ## Authors
 * **Melchor Tatlonghari** - *Initial work* - [mel3kings](https://github.com/mel3kings)
+
 
 
 
