@@ -3,13 +3,17 @@ package com.email.service.main;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
+import akka.cluster.Cluster;
 import akka.pattern.Patterns;
 import akka.pattern.PatternsCS;
 import com.email.service.api.EmailService;
 import com.email.service.controller.EmailSenderActor;
+import com.email.service.controller.SimpleClusterListener;
 import com.email.service.data.SendEmailRequest;
 import com.email.service.data.SendEmailResponse;
 import com.email.service.util.AppEvents;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
@@ -35,22 +39,35 @@ public class MainApplication {
 
     private static final String EMAIL_ACTOR = "email_actor";
     private final static int TIME_OUT = 15000;
-
+    private String AKKA_PORT = System.getenv("AKKA_PORT");
     @Autowired @Qualifier("local") private EmailService localMailService;
     @Autowired @Qualifier("mailGun") private EmailService mailGunMailService;
     @Autowired @Qualifier("sendGrid") private EmailService sendGridMailService;
 
     private ActorSystem actorSystem;
     private ActorRef actorRef;
-
     public MainApplication(){
-        actorSystem = ActorSystem.create();
+        if (null == AKKA_PORT) {
+            AKKA_PORT = "2551";
+        }
+        //  actorSystem = ActorSystem.create();
+        //   String[] ports = new String[] { "2551", "2552", "0" };
+        //  for (String port : ports) {
+        // Override the configuration of the port
+        Config config = ConfigFactory.parseString("akka.remote.netty.tcp.port=" + AKKA_PORT + "\n" +
+                "akka.remote.artery.canonical.port=" + AKKA_PORT)
+                .withFallback(ConfigFactory.load());
+        // Create an Akka system
+        ActorSystem system = ActorSystem.create("ClusterSystem", config);
+        // Create an actor that handles cluster domain events
+        system.actorOf(Props.create(SimpleClusterListener.class), "clusterListener");
+        // }
     }
 
     @RequestMapping(value = "/")
     public String health() {
         AppEvents.eventOf("API Health Check",null);
-        return "App OK!";
+        return "App OK! Akka cluster port is : " + AKKA_PORT;
     }
 
     @RequestMapping(value = "/send", consumes = {MediaType.APPLICATION_JSON_VALUE}, method = RequestMethod.POST)

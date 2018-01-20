@@ -1,0 +1,18 @@
+version: '3'
+services:
+  email-service:
+    ports:
+      - "8080:8080"
+    container_name: email-service
+    image: mel3kings/scalable-email-service
+    build: .
+    environment:
+      AKKA_PORT: 2551
+  email-services2:
+    ports:
+      - "8081:8080"
+    container_name: email-service_2
+    image: mel3kings/scalable-email-service
+    build: .
+    environment:
+          AKKA_PORT: 2552
