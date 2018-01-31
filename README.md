@@ -2,6 +2,9 @@
 
 Fully Scalable Email Service
 
+## Architectual Notes
+
+![alt text](https://github.com/mel3kings/scalable-email-service/blob/master/Architecture.png)
 
 ## Getting Started
 When running the install command Docker/Maven needs installed/running in your machine.
@@ -68,13 +71,6 @@ POST Method
 * Send Grid API does not allow duplicates between to, cc, bccs
 * Currently using Docker-Toolbox so docker ip is 192.168.99.100 on integration test and needs some tweaks to run integration testing.
 
-## Architectual Notes
-
-
-![alt text](https://github.com/mel3kings/scalable-email-service/blob/master/Architecture.png)
-
-Note: this is for illustration purpose only, we have not set the actual scaling and cluster to avoid costs.
-Currently we only have one EC2 instance under a load balancer, but this is the architecture of the application.
 
 ### Implementations Notes
 * We are using [Actor Model](https://doc.akka.io/docs/akka/current/guide/actors-motivation.html) to handle calls, this enables calls to be non-blocking and allows asynchronous processing
